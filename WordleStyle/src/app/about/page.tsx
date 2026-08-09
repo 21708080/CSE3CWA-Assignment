@@ -1,0 +1,3 @@
+import type { Metadata } from "next";
+export const metadata: Metadata = { title: "About" };
+export default function Page(){return <div className="page-width page-stack"><header className="page-intro"><span className="eyebrow"><i/> About</span><h1>Built for clear classroom preparation.</h1><p>WordleStyle is an activity builder for preparing phoneme-based learning tasks.</p></header><div className="content-grid"><section className="content-card"><h2>How it works</h2><p>Choose an activity, configure phoneme content, inspect the live preview, then generate a single HTML file that opens in a normal browser.</p></section><section className="content-card"><h2>Assessment 1</h2><p>Chiemi McLean 21708080, Student from class Cloud-base web application.</p></section></div></div>}
