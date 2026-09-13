@@ -1,0 +1,104 @@
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ActivityType {
+  WORDLE
+  WORD_SEARCH
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum ThemeMode {
+  LIGHT
+  DARK
+  SYSTEM
+}
+
+model WordList {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  words       Word[]
+  activities  Activity[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Word {
+  id          Int           @id @default(autoincrement())
+  englishWord String
+  hint        String?
+  wordListId  Int
+  wordList    WordList      @relation(fields: [wordListId], references: [id], onDelete: Cascade)
+  phonemes    WordPhoneme[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  @@index([wordListId])
+}
+
+model Phoneme {
+  id           Int           @id @default(autoincrement())
+  symbol       String        @unique
+  englishLabel String
+  example      String?
+  words        WordPhoneme[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model WordPhoneme {
+  id        Int      @id @default(autoincrement())
+  wordId    Int
+  phonemeId Int
+  position  Int
+  word      Word     @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  phoneme   Phoneme  @relation(fields: [phonemeId], references: [id])
+  @@unique([wordId, position])
+  @@index([phonemeId])
+}
+
+model Activity {
+  id                Int          @id @default(autoincrement())
+  name              String
+  type              ActivityType
+  difficulty        Difficulty
+  hintsEnabled      Boolean      @default(true)
+  showEnglishAnswer Boolean      @default(true)
+  maxAttempts       Int?
+  gridSize          Int?
+  wordListId        Int
+  wordList          WordList     @relation(fields: [wordListId], references: [id], onDelete: Cascade)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  @@index([wordListId])
+  style             ActivityStyle?
+}
+
+model ActivityStyle {
+  id              Int       @id @default(autoincrement())
+  activityId      Int       @unique
+  themeMode       ThemeMode @default(LIGHT)
+  accentColor     String?   @default("#2563eb")
+  backgroundColor String?   @default("#f8fafc")
+  textColor       String?   @default("#0f172a")
+  fontScale       Float     @default(1)
+  highContrast    Boolean   @default(false)
+  reducedMotion   Boolean   @default(false)
+  enhancedFocus   Boolean   @default(true)
+  largeControls   Boolean   @default(false)
+  customCss       String?
+  activity        Activity  @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
